@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import com.allen.remeberpassword.model.UserInfo
 import io.realm.Realm
 import io.realm.RealmResults
@@ -36,7 +37,10 @@ class UserInfoActivity : AppCompatActivity() {
             false
         }
         recyceView.layoutManager = LinearLayoutManager(this)
-        userInfoAdapter = UserInfoAdapter(this)
+        var realm: Realm = Realm.getDefaultInstance()
+        var realmResults: RealmResults<UserInfo> = realm.where(UserInfo::class.java).findAll()
+        var userInfoList: List<UserInfo> = realm.copyFromRealm(realmResults)
+        userInfoAdapter = UserInfoAdapter(this, userInfoList)
         recyceView.adapter = userInfoAdapter
     }
 
