@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.AdapterDataObserver
 import android.view.View
 import com.allen.remeberpassword.model.UserInfo
@@ -22,6 +21,7 @@ class UserInfoActivity : AppCompatActivity() {
         }
     }
 
+    var userInfoList: MutableList<UserInfo>? = null
     var userInfoAdapter: UserInfoAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,13 +41,28 @@ class UserInfoActivity : AppCompatActivity() {
         recyceView.layoutManager = LinearLayoutManager(this)
         var realm: Realm = Realm.getDefaultInstance()
         var realmResults: RealmResults<UserInfo> = realm.where(UserInfo::class.java).findAll()
-        var userInfoList: List<UserInfo> = realm.copyFromRealm(realmResults)
-        userInfoAdapter = UserInfoAdapter(this, userInfoList as ArrayList<UserInfo>)
-        userInfoAdapter?.registerAdapterDataObserver(object:AdapterDataObserver() {
+        userInfoList = realm.copyFromRealm(realmResults)
+        if (userInfoList?.isEmpty()!!) {
+            empty_layout.visibility = View.VISIBLE
+        }
+        userInfoAdapter = UserInfoAdapter(this, userInfoList!!)
+        userInfoAdapter?.registerAdapterDataObserver(object : AdapterDataObserver() {
+
             override fun onChanged() {
                 super.onChanged()
-                if(userInfoList.isEmpty()) {
-                    empty_layout.visibility  = View.VISIBLE
+                if (userInfoList?.isEmpty()!!) {
+                    empty_layout.visibility = View.VISIBLE
+                } else {
+                    empty_layout.visibility = View.GONE
+                }
+            }
+
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                super.onItemRangeRemoved(positionStart, itemCount)
+                if (userInfoList?.isEmpty()!!) {
+                    empty_layout.visibility = View.VISIBLE
+                } else {
+                    empty_layout.visibility = View.GONE
                 }
             }
 
@@ -58,14 +73,14 @@ class UserInfoActivity : AppCompatActivity() {
     }
 
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST) {
             var realm: Realm = Realm.getDefaultInstance()
-            var realmResults: RealmResults<UserInfo> = realm.where(UserInfo::class.java).findAll()
-            var userInfoList: List<UserInfo> = realm.copyFromRealm(realmResults)
-            userInfoAdapter?.addData(userInfoList as ArrayList<UserInfo>)
+            var realmResults  = realm.where(UserInfo::class.java).findAll()
+            userInfoList?.clear()
+            userInfoList?.addAll(realm.copyFromRealm(realmResults))
+            userInfoAdapter?.notifyDataSetChanged()
         }
     }
 }

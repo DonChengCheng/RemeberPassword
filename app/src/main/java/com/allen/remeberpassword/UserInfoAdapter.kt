@@ -3,7 +3,6 @@ package com.allen.remeberpassword
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -15,7 +14,7 @@ import io.realm.RealmResults
 /**
  * Created by hasee on 2017/4/3.
  */
-class UserInfoAdapter(context: Context, var infos: ArrayList<UserInfo>) : RecyclerView.Adapter<UserInfoAdapter.UserInfoViewHolder>() {
+class UserInfoAdapter(context: Context, var infos: MutableList<UserInfo>) : RecyclerView.Adapter<UserInfoAdapter.UserInfoViewHolder>() {
 
 
     var inflater: LayoutInflater? = null
@@ -67,8 +66,4 @@ class UserInfoAdapter(context: Context, var infos: ArrayList<UserInfo>) : Recycl
         }
     }
 
-    fun addData(userInfoList: ArrayList<UserInfo>) {
-        this.infos = userInfoList
-        notifyDataSetChanged()
-    }
 }
