@@ -24,7 +24,7 @@ class AddUserInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_user_info)
-        toolbar.title = "添加用户信息"
+        toolbar.title = getString(R.string.add_user_account_info)
         toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_action_back)
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.inflateMenu(R.menu.save_info)

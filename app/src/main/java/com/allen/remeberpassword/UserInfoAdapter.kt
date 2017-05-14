@@ -6,14 +6,17 @@ import android.view.LayoutInflater
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import com.allen.remeberpassword.model.UserInfo
+import io.realm.Realm
+import io.realm.RealmResults
 
 /**
  * Created by hasee on 2017/4/3.
  */
-class UserInfoAdapter(context: Context, var infos: List<UserInfo>) : RecyclerView.Adapter<UserInfoAdapter.UserInfoViewHolder>() {
-    constructor(context: Context) : this(context, ArrayList())
+class UserInfoAdapter(context: Context, var infos: ArrayList<UserInfo>) : RecyclerView.Adapter<UserInfoAdapter.UserInfoViewHolder>() {
+
 
     var inflater: LayoutInflater? = null
 
@@ -26,6 +29,19 @@ class UserInfoAdapter(context: Context, var infos: List<UserInfo>) : RecyclerVie
             holder?.titleText?.text = title
             holder?.accountText?.text = account
             holder?.passwordText?.text = password
+        }
+        holder?.delImage?.setOnClickListener {
+            infos.removeAt(position)
+            notifyItemRemoved(position)
+            notifyItemChanged(position, infos.size)
+            //更改完的数据信息，存储到数据库
+            var realm: Realm = Realm.getDefaultInstance()
+            var realmResults: RealmResults<UserInfo> = realm.where(UserInfo::class.java).findAll()
+            realm.executeTransaction {
+                var userInfo = realmResults[position]
+                userInfo.deleteFromRealm()
+            }
+
         }
     }
 
@@ -41,15 +57,17 @@ class UserInfoAdapter(context: Context, var infos: List<UserInfo>) : RecyclerVie
         var titleText: TextView? = null
         var accountText: TextView? = null
         var passwordText: TextView? = null
+        var delImage: ImageView? = null
 
         init {
             titleText = itemView.findViewById(R.id.title_text) as TextView
             accountText = itemView.findViewById(R.id.account_text) as TextView
             passwordText = itemView.findViewById(R.id.password_text) as TextView
+            delImage = itemView.findViewById(R.id.del_image) as ImageView
         }
     }
 
-    fun addData(userInfoList: List<UserInfo>) {
+    fun addData(userInfoList: ArrayList<UserInfo>) {
         this.infos = userInfoList
         notifyDataSetChanged()
     }

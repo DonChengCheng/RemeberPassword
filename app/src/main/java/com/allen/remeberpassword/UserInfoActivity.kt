@@ -6,6 +6,9 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.AdapterDataObserver
+import android.view.View
 import com.allen.remeberpassword.model.UserInfo
 import io.realm.Realm
 import io.realm.RealmResults
@@ -24,7 +27,7 @@ class UserInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_info)
-        toolbar.title = "用户信息"
+        toolbar.title = getString(R.string.user_account_info)
         toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_action_back)
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.inflateMenu(R.menu.add_info)
@@ -36,9 +39,25 @@ class UserInfoActivity : AppCompatActivity() {
             false
         }
         recyceView.layoutManager = LinearLayoutManager(this)
-        userInfoAdapter = UserInfoAdapter(this)
+        var realm: Realm = Realm.getDefaultInstance()
+        var realmResults: RealmResults<UserInfo> = realm.where(UserInfo::class.java).findAll()
+        var userInfoList: List<UserInfo> = realm.copyFromRealm(realmResults)
+        userInfoAdapter = UserInfoAdapter(this, userInfoList as ArrayList<UserInfo>)
+        userInfoAdapter?.registerAdapterDataObserver(object:AdapterDataObserver() {
+            override fun onChanged() {
+                super.onChanged()
+                if(userInfoList.isEmpty()) {
+                    empty_layout.visibility  = View.VISIBLE
+                }
+            }
+
+        })
         recyceView.adapter = userInfoAdapter
+
+
     }
+
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -46,7 +65,7 @@ class UserInfoActivity : AppCompatActivity() {
             var realm: Realm = Realm.getDefaultInstance()
             var realmResults: RealmResults<UserInfo> = realm.where(UserInfo::class.java).findAll()
             var userInfoList: List<UserInfo> = realm.copyFromRealm(realmResults)
-            userInfoAdapter?.addData(userInfoList)
+            userInfoAdapter?.addData(userInfoList as ArrayList<UserInfo>)
         }
     }
 }

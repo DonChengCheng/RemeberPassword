@@ -14,4 +14,6 @@
         completions."
     </string>
     <string name="save_info_success">保存信息成功</string>
+    <string name="user_account_info">用户账号信息</string>
+    <string name="add_user_account_info">添加用户账号信息</string>
 </resources>

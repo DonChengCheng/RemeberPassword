@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity(){
     private var mProgressView: View? = null
     private var mLoginFormView: View? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun   onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         mEmailView = findViewById(R.id.email) as AutoCompleteTextView
