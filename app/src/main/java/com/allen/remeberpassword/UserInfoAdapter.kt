@@ -14,7 +14,7 @@ import io.realm.RealmResults
 /**
  * Created by hasee on 2017/4/3.
  */
-class UserInfoAdapter(context: Context, var infos: MutableList<UserInfo>) : RecyclerView.Adapter<UserInfoAdapter.UserInfoViewHolder>() {
+class UserInfoAdapter(var context: Context, var infos: MutableList<UserInfo>) : RecyclerView.Adapter<UserInfoAdapter.UserInfoViewHolder>() {
 
 
     var inflater: LayoutInflater? = null
@@ -40,7 +40,9 @@ class UserInfoAdapter(context: Context, var infos: MutableList<UserInfo>) : Recy
                 var userInfo = realmResults[position]
                 userInfo.deleteFromRealm()
             }
-
+        }
+        holder?.itemView?.setOnClickListener {
+            (context as UserInfoActivity).openUserInfoEditActivity(infos[position])
         }
     }
 

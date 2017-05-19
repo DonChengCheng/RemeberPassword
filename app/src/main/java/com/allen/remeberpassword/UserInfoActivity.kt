@@ -83,4 +83,7 @@ class UserInfoActivity : AppCompatActivity() {
             userInfoAdapter?.notifyDataSetChanged()
         }
     }
+    fun openUserInfoEditActivity(userInfo: UserInfo) {
+        startActivityForResult(AddUserInfoActivity.newIntent(this, userInfo), REQUEST)
+    }
 }

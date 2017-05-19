@@ -11,6 +11,7 @@ import android.view.MenuItem
 import com.allen.remeberpassword.model.UserInfo
 import com.allen.remeberpassword.utilty.ToastUtilty
 import io.realm.Realm
+import io.realm.RealmResults
 import kotlinx.android.synthetic.main.activity_add_user_info.*
 
 class AddUserInfoActivity : AppCompatActivity() {
@@ -19,8 +20,17 @@ class AddUserInfoActivity : AppCompatActivity() {
         fun newIntent(context: Context): Intent {
             return Intent(context, AddUserInfoActivity::class.java)
         }
+
+        fun newIntent(context: Context, userInfo: UserInfo): Intent {
+            var intent = Intent(context, AddUserInfoActivity::class.java)
+            intent.putExtra(DATA, userInfo)
+            return intent
+        }
+
+        val DATA: String = "DATA"
     }
 
+    var mUserInfo: UserInfo? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_user_info)
@@ -35,6 +45,11 @@ class AddUserInfoActivity : AppCompatActivity() {
             }
             false
         }
+        mUserInfo = intent.getSerializableExtra(DATA) as UserInfo
+        titleEdit.setText(mUserInfo?.title)
+        accountEdit.setText(mUserInfo?.account)
+        passwordEdit.setText(mUserInfo?.password)
+
     }
 
 
@@ -58,14 +73,22 @@ class AddUserInfoActivity : AppCompatActivity() {
 
         var realm = Realm.getDefaultInstance()
         realm.executeTransaction {
-            var passwordInfo = UserInfo()
-            passwordInfo.title = title
-            passwordInfo.account = account
-            passwordInfo.password = password
-            realm.copyToRealm(passwordInfo)
+            if(mUserInfo == null) {
+                var passwordInfo = UserInfo()
+                passwordInfo.title = title
+                passwordInfo.account = account
+                passwordInfo.password = password
+                realm.copyToRealm(passwordInfo)
+            } else {
+                var userInfo = realm.where(UserInfo::class.java).equalTo("title", mUserInfo?.title).findFirst()
+                userInfo.title = title
+                userInfo.account = account
+                userInfo.password = password
+            }
             ToastUtilty.longToast(this, getString(R.string.save_info_success))
             setResult(Activity.RESULT_OK)
             finish()
+
         }
 
     }
